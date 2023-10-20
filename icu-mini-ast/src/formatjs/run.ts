@@ -14,25 +14,36 @@ export const evaluateAst = <T, U>(
   }
   // unpack the AST:
   const [argNames, ...ast] = packedAst;
-  const result = ast
+  const result = reduceStrings(ast
     .map((contents) =>
       getContentValues(contents, argNames, args, locale, 0, formatters)
     )
-    .flat();
+    .flat());
   return result;
 };
 
 export const run = <T, U>(
-  packedAst: CompiledAst,
-  locale: Locale,
-  args: Record<string, T>,
-  formatters: Record<string, (...args: any[]) => U> = {}
-) => evaluateAst(packedAst, locale, args, formatters).join("");
+  ...args: [CompiledAst,
+   Locale,
+   Record<string, T>,
+   Record<string, (...args: any[]) => U>]
+) => evaluateAst(...args).join("");
 
 type LcFunc = (n: number | string) => PluralCategory;
 type ValueOf<T> = T[keyof T];
 /** [The current locale, cardinal, ordinal] e.g: `["en-US", require("@messageformat/runtime/lib/cardinals").en, require("make-plural/ordinals").en ]` */
 type Locale = readonly [string, LcFunc, LcFunc];
+
+const reduceStrings = <T extends Array<any>>(arr: T): T => arr.reduce((acc, item) => {
+  if ([typeof item, typeof acc[acc.length - 1]].some((t) => t !== "string" && t !== "number")) {
+    acc.push(item);
+  }
+  else {
+    acc[acc.length - 1] += String(item);
+  }
+  return acc;
+}, [] as T);
+
 
 const getContentValues = <T, U>(
   contents: CompiledAstContents,
@@ -56,14 +67,11 @@ const getContentValues = <T, U>(
   const [kind, attr, data] = contents;
   const value = values[keys[attr]];
   ordinalValue = value as number;
-  const resolveChildContent = (content: CompiledAstContents[]) => {
-    const result = content
+  const resolveChildContent = (content: CompiledAstContents[]) => reduceStrings(content
     .map((content) =>
       getContentValues(content, keys, values, locale, ordinalValue, formatters)
     )
-    .flat();
-    return (result.length && !result.some((item) => typeof item !== "string")) ? [result.join("")] : result;
-  }
+    .flat());
 
   switch (kind) {
     case "plural": {
@@ -80,20 +88,16 @@ const getContentValues = <T, U>(
         true
       ) as ValueOf<typeof data>)
     }
-    case "select": {
+    case "select":
       return resolveChildContent(select(String(value), data) as ValueOf<typeof data>);
-    }
     case "fn": {
-      const param =
-        typeof contents[3] === "string" ? contents[3].trim() : undefined;
       return resolveChildContent([
-        formatters[data](value, locale[0], param) as CompiledAstContents,
+        formatters[data](value, locale[0], contents[3]) as CompiledAstContents,
       ]);
     }
     case "tag": {
-      const childTokens = contents.slice(2);
-      // attr -> tag 
-      const fn = values[keys[attr]] as (...args: any) => any;
+      const tag = keys[attr];
+      const fn = (values[tag] as (...args: any) => any) || ((children) => [`<${tag}>`, children, `</${tag}>`]);
       if (process.env.NODE_ENV !== "production") {
         if (typeof fn !== "function") {
           throw new Error(
@@ -101,8 +105,8 @@ const getContentValues = <T, U>(
           );
         }
       }
-      const children = resolveChildContent(childTokens);
-      return [fn(...children)];
+      const childPreprocessor = (formatters.children || ((children) => children)) as (children: Array<string | T>, locale: string) => Array<any>;
+      return fn(...childPreprocessor(resolveChildContent(contents.slice(2)), locale[0]));
     }
   }
 };

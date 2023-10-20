@@ -13,10 +13,10 @@
     "@messageformat/parser": "^5.1.0",
     "@formatjs/icu-messageformat-parser": "2.7.0",
     "@messageformat/runtime": "^3.0.1",
-    "@types/node": "^20.8.7",
-    "tsup": "^7.2.0"
+    "@types/node": "^20.8.7"
   },
   "devDependencies": {
-    "vitest": "^0.34.6"
+    "vitest": "^0.34.6",
+    "tsup": "^7.2.0"
   }
 }

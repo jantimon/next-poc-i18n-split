@@ -6,7 +6,7 @@ export const evaluateAst = <T, U>(
   packedAst: CompiledAst,
   locale: Locale,
   args: Record<string, T>,
-  formatters: Record<string, (...args: any[]) => U>
+  formatters: Record<string, (...args: any[]) => U> = {}
 ) => {
   // pure text can be returned as string:
   if (typeof packedAst === "string") {
