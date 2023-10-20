@@ -58,7 +58,6 @@ test("evaluateAst with non string argument", () => {
             "!"]);
 });
 
-// `Wow formatJs allows <b>{dynamic} tags</b>!`
 test("tags", () => {
     const json = compileToJson(`Wow formatJs allows <b>{dynamic} tags</b>!`);
     expect(run(json, enUS, {
