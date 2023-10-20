@@ -1,7 +1,7 @@
 import { de, en } from "@messageformat/runtime/lib/cardinals";
 import { de as deOd, en as enOd } from "make-plural/ordinals";
-import type { CompiledAst } from "../src/message-format/compile";
-import { run } from "../src/message-format/run";
+import type { CompiledAst } from "../src/formatjs/compile";
+import { run } from "../src/formatjs/run";
 
 const deDE = [
     "de-DE",
