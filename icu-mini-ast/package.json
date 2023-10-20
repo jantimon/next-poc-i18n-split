@@ -1,0 +1,21 @@
+{
+  "name": "icu-mini-ast",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@messageformat/parser": "^5.1.0",
+    "@messageformat/runtime": "^3.0.1",
+    "@types/node": "^20.8.7",
+    "tsup": "^7.2.0"
+  },
+  "devDependencies": {
+    "vitest": "^0.34.6"
+  }
+}
