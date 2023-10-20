@@ -1,7 +1,8 @@
 import { de, en } from "@messageformat/runtime/lib/cardinals";
-import { en as enOd, de as deOd } from "make-plural/ordinals";
+import { de as deOd, en as enOd } from "make-plural/ordinals";
 import type { CompiledAst } from "../src/compile";
 import { run } from "../src/run";
+import * as formatters from "@messageformat/runtime/lib/formatters";
 
 const deDE = [
     "de-DE",
@@ -13,7 +14,6 @@ const enUS = [
     en,
     enOd
 ] as const;
-
 
 const imgs = [
     ["count"],
@@ -43,4 +43,4 @@ const place = [
     ],
     "!"
 ] satisfies CompiledAst;
-console.log(run(place, enUS, { place: 1 }));
+console.log(run(place, enUS, { place: 1 }, formatters));

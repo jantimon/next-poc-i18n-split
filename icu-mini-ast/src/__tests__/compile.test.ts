@@ -41,3 +41,22 @@ test("selectordinal", () => {
     ]);
    
 });
+
+test("fn", () => {
+   const json = compileToJson(`It is now {T, time} on {T, date}`);
+   expect(json).toEqual([
+       ["T"],
+       "It is now ",
+       [
+           "fn",
+           0,
+           "time"
+       ],
+       " on ",
+       [
+           "fn",
+           0,
+           "date"
+       ]
+   ]);
+});
